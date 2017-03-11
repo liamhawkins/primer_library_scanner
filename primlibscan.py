@@ -17,10 +17,10 @@ def get_csv_files(LIB_PATH, MIR_PATH):
     return lib, mir
 
 
-def finishedpopup():
+def finishedpopup(num_unique):
     toplevel = Toplevel()
     toplevel.geometry('300x100')
-    Label(toplevel, text='Scan Finished!').pack()
+    Label(toplevel, text='Scan Finished! Found {} unique primers'.format(num_unique)).pack()
     toplevel.focus_force()
 
 
@@ -94,11 +94,13 @@ class Window(Frame):
 
         # Determine if miRNA in list have unique primers
         unique = []
+        self.num_unique = 0
         for match in mir['matches']:
             if len(mir[mir['matches'] == match]) > 1:
                 unique.append('NOT UNIQUE')
             else:
                 unique.append('OK')
+                self.num_unique += 1
         mir['unique'] = unique
 
         mir.sort_values('matches', inplace=True)
@@ -107,7 +109,7 @@ class Window(Frame):
         mir.to_csv(MATCHES_FILENAME, sep=',', index=False)
         mirNM.to_csv(NM_FILENAME, sep=',', index=False)
 
-        finishedpopup()
+        finishedpopup(self.num_unique)
 
 if __name__ == '__main__':
     gui = Tk()
